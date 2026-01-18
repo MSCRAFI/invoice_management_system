@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Invoice: {{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+    <hgroup>
+        <h1>Invoice: {{ invoice.invoice_number }}</h1>
+        <p><strong>Status:</strong> {{ invoice.get_status_display }}</p>
+    </hgroup>
+    
+    <div class="grid">
+        <div>
+            <h3>Bill To</h3>
+            <p><strong>{{ invoice.customer.name }}</strong><br>{{ invoice.customer.address|linebreaks }}</p>
+        </div>
+        <div>
+            <h3>Details</h3>
+            <p><strong>Date Issued:</strong> {{ invoice.issued_at|date:"Y-m-d" }}<br>
+               <strong>Date Due:</strong> {{ invoice.due_at|date:"Y-m-d" }}</p>
+        </div>
+    </div>
+
+    <h3>Items</h3>
+    <table role="table">
+        <thead><tr><th>Product</th><th>Description</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+        <tbody>
+            {% for item in invoice.items.all %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.unit_price|floatformat:2 }}</td>
+                <td>${{ item.total|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+    <div style="text-align: right;">
+        <p>Subtotal: ${{ invoice.subtotal|floatformat:2 }}</p>
+        <p>Tax: ${{ invoice.tax_amount|floatformat:2 }}</p>
+        <h3>Total: ${{ invoice.total_amount|floatformat:2 }}</h3>
+        <h3>Balance Due: ${{ invoice.balance_due|floatformat:2 }}</h3>
+    </div>
+
+    <hr>
+    <div>
+        {% if invoice.status != 'PAID' and invoice.status != 'CANCELLED' %}
+            <a href="{% url 'invoice-add-item' invoice.pk %}" role="button">Add Item</a>
+            <a href="{% url 'payment-create' invoice.pk %}" role="button" class="primary">Record Payment</a>
+            <a href="{% url 'invoice-mark-paid' invoice.pk %}" role="button" class="secondary">Mark as Fully Paid</a>
+        {% endif %}
+        <a href="{% url 'invoice-update' invoice.pk %}" role="button">Edit Invoice</a>
+    </div>
+{% endblock %}

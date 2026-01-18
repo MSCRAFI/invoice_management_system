@@ -1,4 +1,7 @@
 asgiref==3.11.0
 Django==6.0.1
+djangorestframework==3.16.1
+djangorestframework_simplejwt==5.5.1
+PyJWT==2.10.1
 python-decouple==3.8
 sqlparse==0.5.5

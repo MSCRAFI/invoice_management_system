@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Customer: {{ customer.name }}{% endblock %}
+{% block content %}
+    <hgroup>
+        <h1>{{ customer.name }}</h1>
+        <p>Customer Details</p>
+    </hgroup>
+    <p><strong>Email:</strong> {{ customer.email }}</p>
+    <p><strong>Phone:</strong> {{ customer.phone }}</p>
+    <p><strong>Address:</strong><br>{{ customer.address|linebreaks }}</p>
+    <p><strong>Status:</strong> {{ customer.is_active|yesno:"Active,Inactive" }}</p>
+    <hr>
+    <a href="{% url 'customer-update' customer.pk %}" role="button">Edit</a>
+    <a href="{% url 'customer-delete' customer.pk %}" role="button" class="contrast">Deactivate</a>
+{% endblock %}

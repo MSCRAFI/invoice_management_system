@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .models import Invoice, InvoiceItem
 from .services import recalculate_invoice_total
-from catalog.models import Product
+from apps.catalog.models import Product
 from django.db import models
 
 @receiver(post_save, sender=InvoiceItem)

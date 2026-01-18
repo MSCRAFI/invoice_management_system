@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Add Item to Invoice {{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+    <hgroup>
+        <h1>Add Item to Invoice: {{ invoice.invoice_number }}</h1>
+    </hgroup>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="primary">Add Item</button>
+        <a href="{% url 'invoice-detail' invoice.pk %}" role="button" class="secondary">Cancel</a>
+    </form>
+{% endblock %}

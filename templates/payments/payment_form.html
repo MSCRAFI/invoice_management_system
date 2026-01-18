@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Record Payment for Invoice {{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+    <hgroup>
+        <h1>Record Payment</h1>
+        <p>For Invoice: {{ invoice.invoice_number }}</p>
+    </hgroup>
+    <article>
+        <header>Invoice Details</header>
+        <p>Total Amount: ${{ invoice.total_amount|floatformat:2 }}<br>
+           Balance Due: ${{ invoice.balance_due|floatformat:2 }}</p>
+    </article>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="primary">Record Payment</button>
+        <a href="{% url 'invoice-detail' invoice.pk %}" role="button" class="secondary">Cancel</a>
+    </form>
+{% endblock %}

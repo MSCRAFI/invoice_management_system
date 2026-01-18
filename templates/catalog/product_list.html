@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Products & Services{% endblock %}
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <hgroup><h1>Products & Services</h1></hgroup>
+        <a href="{% url 'product-create' %}" role="button" class="primary">Add New Product</a>
+    </div>
+    <table role="table">
+        <thead>
+            <tr><th>Name</th><th>Price</th><th>Stock</th><th>Active</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>${{ product.unit_price|floatformat:2 }}</td>
+                <td>{{ product.get_stock_status }}</td>
+                <td>{{ product.is_active|yesno:"Yes,No" }}</td>
+                <td><a href="{% url 'product-update' product.pk %}" role="button">Edit</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

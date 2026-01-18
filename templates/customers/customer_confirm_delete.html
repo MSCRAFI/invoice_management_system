@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Deactivate Customer{% endblock %}
+{% block content %}
+    <hgroup>
+        <h1>Confirm Deactivation</h1>
+        <p>Are you sure you want to deactivate this customer?</p>
+    </hgroup>
+    <article>
+        <header><strong>{{ customer.name }}</strong></header>
+        <p>{{ customer.email }}</p>
+    </article>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="contrast">Yes, Deactivate</button>
+        <a href="{% url 'customer-detail' customer.pk %}" role="button" class="secondary">Cancel</a>
+    </form>
+{% endblock %}

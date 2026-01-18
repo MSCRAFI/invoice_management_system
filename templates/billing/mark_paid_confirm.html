@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Mark Invoice as Paid{% endblock %}
+{% block content %}
+    <hgroup>
+        <h1>Confirm Mark as Paid</h1>
+        <p>Are you sure you want to mark this invoice as paid? This will update inventory.</p>
+    </hgroup>
+    <article>
+        <header><strong>{{ invoice.invoice_number }}</strong></header>
+        <p>Customer: {{ invoice.customer.name }}<br>
+           Total: ${{ invoice.total_amount|floatformat:2 }}</p>
+    </article>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="contrast">Yes, Mark as Paid</button>
+        <a href="{% url 'invoice-detail' invoice.pk %}" role="button" class="secondary">Cancel</a>
+    </form>
+{% endblock %}

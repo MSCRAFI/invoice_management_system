@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Invoices{% endblock %}
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <hgroup><h1>Invoices</h1></hgroup>
+        <a href="{% url 'invoice-create' %}" role="button" class="primary">Create New Invoice</a>
+    </div>
+    <table role="table">
+        <thead>
+            <tr><th>Invoice #</th><th>Customer</th><th>Status</th><th>Date Issued</th><th>Total</th></tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr>
+                <td><a href="{% url 'invoice-detail' invoice.pk %}">{{ invoice.invoice_number }}</a></td>
+                <td>{{ invoice.customer.name }}</td>
+                <td>{{ invoice.get_status_display }}</td>
+                <td>{{ invoice.issued_at|date:"Y-m-d" }}</td>
+                <td>${{ invoice.total_amount|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

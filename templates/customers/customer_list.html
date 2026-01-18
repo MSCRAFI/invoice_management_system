@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <hgroup><h1>Customers</h1></hgroup>
+        <a href="{% url 'customer-create' %}" role="button" class="primary">Add New Customer</a>
+    </div>
+    
+    <table role="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td><a href="{% url 'customer-detail' customer.pk %}">{{ customer.name }}</a></td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.is_active|yesno:"Yes,No" }}</td>
+                <td>
+                    <a href="{% url 'customer-update' customer.pk %}" role="button" class="secondary">Edit</a>
+                    <a href="{% url 'customer-delete' customer.pk %}" role="button" class="contrast">Deactivate</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+        <nav>
+            <ul>
+                {% if page_obj.has_previous %}
+                    <li><a href="?page=1">&laquo; First</a></li>
+                    <li><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% endif %}
+                <li>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</li>
+                {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                    <li><a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Invoice Management System{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        /* A small improvement for readability */
+        body > main { container-type: inline-size; }
+        nav { background-color: var(--background-color); }
+        .messages { margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container-fluid">
+            <ul>
+                <li><strong><a href="{% url 'dashboard' %}" role="button" class="secondary">Invoice System</a></strong></li>
+            </ul>
+            <ul>
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'customer-list' %}">Customers</a></li>
+                <li><a href="{% url 'product-list' %}">Products</a></li>
+                <li><a href="{% url 'invoice-list' %}">Invoices</a></li>
+                <li><a href="{% url 'payment-list' %}">Payments</a></li>
+            </ul>
+            <ul>
+                {% if user.is_authenticated %}
+                    <li>Hi, {{ user.email }}!</li>
+                    <li><a href="{% url 'logout' %}" role="button" class="contrast">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" role="button" class="contrast">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <article class="message {{ message.tags }}">
+                        {{ message }}
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="container">
+        <hr>
+        <p>&copy; {% now "Y" %} Invoice Management System</p>
+    </footer>
+</body>
+</html>

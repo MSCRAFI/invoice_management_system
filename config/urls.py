@@ -15,8 +15,35 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
+# For better 404 handling during development
+from django.views.defaults import page_not_found
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    # Django Admin
+    path('admin/', admin.site.urls),
+
+    # Application URLs
+    # The root URL '/' points to the accounts app (dashboard/login)
+    path('', include('apps.accounts.urls')),
+    
+    path('customers/', include('apps.customers.urls')),
+    
+    # Using 'products' is more user-friendly than 'catalog'
+    path('products/', include('apps.catalog.urls')),
+    
+    path('invoices/', include('apps.billing.urls')),
+    
+    path('payments/', include('apps.payments.urls')),
+
+    # Placeholder for future reports
+    path('reports/', include('apps.reports.urls')), 
 ]
+
+# Serve media and static files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

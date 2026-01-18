@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}{% if form.instance.pk %}Edit Customer{% else %}New Customer{% endif %}{% endblock %}
+{% block content %}
+    <hgroup>
+        <h1>{% if form.instance.pk %}Edit Customer{% else %}New Customer{% endif %}</h1>
+    </hgroup>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="primary">Save Customer</button>
+        <a href="{% url 'customer-list' %}" role="button" class="secondary">Cancel</a>
+    </form>
+{% endblock %}
