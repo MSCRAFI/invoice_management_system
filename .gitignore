@@ -1,0 +1,42 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+.qodo/
+config/__pycache__/
