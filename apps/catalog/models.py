@@ -2,6 +2,7 @@ from django.db import models
 from common.models import TimeStampedModel, SoftDeleteModel
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 
 # Create your models here.
 
@@ -30,7 +31,7 @@ class Product(TimeStampedModel, SoftDeleteModel):
         _("price"),
         max_digits=10,
         decimal_places=2,
-        validators=[models.MinValueValidator(0)],
+        validators=[MinValueValidator(0)],
         help_text=_("The price per single unit."),
     )
     # --- Inventory Tracking Field ---

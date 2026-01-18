@@ -3,6 +3,7 @@ from common.models import TimeStampedModel
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator 
 
 # Create your models here.
 
@@ -24,7 +25,7 @@ class Payment(TimeStampedModel):
         _("amount"),
         max_digits=10,
         decimal_places=2,
-        validators=[models.MinValueValidator(0)],
+        validators=[MinValueValidator(0)],
         help_text=_("Amount paid towards the invoice."),
     )
     
