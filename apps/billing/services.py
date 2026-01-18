@@ -1,5 +1,6 @@
 from .models import Invoice
 from django.db import transaction
+from django.db import models
 
 @transaction.atomic
 def recalculate_invoice_total(invoice: Invoice):
