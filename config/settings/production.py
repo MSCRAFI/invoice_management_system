@@ -10,6 +10,11 @@ DEBUG = False
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app'
+]
+
 # Force use of SQLite in production
 DATABASES = {
     'default': {
