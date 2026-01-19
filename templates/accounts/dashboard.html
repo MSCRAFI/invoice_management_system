@@ -5,11 +5,22 @@
 {% block content %}
     <hgroup>
         <h1>Dashboard</h1>
-        <p>System Overview</p>
+        <p>System Overview & Analytics</p>
     </hgroup>
 
+    <!-- Quick Actions -->
     <section>
-        <h2>Summary</h2>
+        <h2>Quick Actions</h2>
+        <div class="grid">
+            <a href="{% url 'invoice-create' %}" role="button" class="primary">+ Create New Invoice</a>
+            <a href="{% url 'customer-create' %}" role="button" class="secondary">+ Add New Customer</a>
+            <a href="{% url 'product-create' %}" role="button" class="secondary">+ Add New Product</a>
+        </div>
+    </section>
+
+    <!-- Key Metrics -->
+    <section>
+        <h2>Key Metrics</h2>
         <div class="grid">
             <article>
                 <header>Total Invoices</header>
@@ -23,32 +34,118 @@
                 <header>Total Revenue</header>
                 <p>${{ total_revenue|floatformat:2 }}</p>
             </article>
+            <article>
+                <header>Total Outstanding</header>
+                <p style="color: var(--del-color);">${{ total_due|floatformat:2 }}</p>
+            </article>
         </div>
     </section>
 
+    <div class="grid">
+        <!-- Overdue Invoices -->
+        <section>
+            <h2>Overdue Invoices</h2>
+            {% if overdue_invoices %}
+                <table role="table">
+                    <thead>
+                        <tr><th>Invoice #</th><th>Customer</th><th>Due Date</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in overdue_invoices %}
+                        <tr>
+                            <td><a href="{% url 'invoice-detail' invoice.pk %}">{{ invoice.invoice_number }}</a></td>
+                            <td>{{ invoice.customer.name }}</td>
+                            <td>{{ invoice.due_at|date:"Y-m-d" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No overdue invoices. Great job!</p>
+            {% endif %}
+        </section>
+
+        <!-- Top Customers -->
+        <section>
+            <h2>Top Customers (by Revenue)</h2>
+            {% if top_customers %}
+                <table role="table">
+                    <thead>
+                        <tr><th>Customer</th><th>Total Spent</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in top_customers %}
+                        <tr>
+                            <td><a href="{% url 'customer-detail' customer.id %}">{{ customer.name }}</a></td>
+                            <td>${{ customer.total_spent|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No customer data available yet.</p>
+            {% endif %}
+        </section>
+    </div>
+    
+    <div class="grid">
+        <!-- Monthly Revenue Chart Placeholder -->
+        <section>
+            <h2>Monthly Revenue Trend</h2>
+            <div style="height: 250px; background-color: var(--background-color); border: 1px solid var(--muted-border-color); border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center; color: var(--muted-color);">
+                <div style="text-align: center;">
+                    <p>Chart Placeholder</p>
+                    <small>Revenue data is ready for a JS charting library.</small>
+                </div>
+            </div>
+            <!-- Data for JavaScript -->
+            <script>
+                window.revenueChartData = {
+                    labels: {{ revenue_chart_labels|safe }},
+                    data: {{ revenue_chart_data|safe }}
+                };
+            </script>
+        </section>
+
+        <!-- Invoice Status Chart Placeholder -->
+        <section>
+            <h2>Invoice Status Breakdown</h2>
+            <div style="height: 250px; background-color: var(--background-color); border: 1px solid var(--muted-border-color); border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center; color: var(--muted-color);">
+                <div style="text-align: center;">
+                    <p>Chart Placeholder</p>
+                    <small>Status data is ready for a JS charting library.</small>
+                </div>
+            </div>
+            <!-- Data for JavaScript -->
+            <script>
+                window.statusChartData = {
+                    labels: {{ status_chart_labels|safe }},
+                    data: {{ status_chart_data|safe }}
+                };
+            </script>
+        </section>
+    </div>
+
+    <!-- Low Stock Alert -->
     <section>
-        <h2>Recent Invoices</h2>
-        <table role="table">
-            <thead>
-                <tr>
-                    <th>Invoice #</th>
-                    <th>Customer</th>
-                    <th>Status</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for invoice in recent_invoices %}
-                <tr>
-                    <td><a href="{% url 'invoice-detail' invoice.pk %}">{{ invoice.invoice_number }}</a></td>
-                    <td>{{ invoice.customer.name }}</td>
-                    <td>{{ invoice.get_status_display }}</td>
-                    <td>${{ invoice.total_amount|floatformat:2 }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="4">No recent invoices.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <h2>Low Stock Alerts</h2>
+        {% if low_stock_products %}
+            <table role="table">
+                <thead>
+                    <tr><th>Product</th><th>Current Stock</th></tr>
+                </thead>
+                <tbody>
+                    {% for product in low_stock_products %}
+                    <tr>
+                        <td><a href="{% url 'product-update' product.pk %}">{{ product.name }}</a></td>
+                        <td style="color: var(--del-color);">{{ product.stock_quantity }} units</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>All products are well-stocked.</p>
+        {% endif %}
     </section>
+
 {% endblock %}

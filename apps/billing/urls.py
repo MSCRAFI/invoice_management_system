@@ -1,4 +1,3 @@
-# billing/urls.py
 from django.urls import path
 from . import views
 
@@ -9,4 +8,7 @@ urlpatterns = [
     path('<int:pk>/edit/', views.InvoiceUpdateView.as_view(), name='invoice-update'),
     path('<int:pk>/add-item/', views.add_item_to_invoice, name='invoice-add-item'),
     path('<int:pk>/mark-paid/', views.mark_invoice_as_paid, name='invoice-mark-paid'),
+    path('<int:pk>/clone/', views.clone_invoice_view, name='invoice-clone'),
+    path('<int:pk>/download-pdf/', views.download_invoice_pdf, name='invoice-download-pdf'),
+    path('<int:pk>/send-email/', views.send_invoice_email, name='invoice-send-email'),
 ]

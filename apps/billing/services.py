@@ -142,3 +142,45 @@ def mark_invoice_paid(invoice: Invoice) -> Invoice:
     invoice.save() # Use save() to trigger any potential post_save logic for the invoice itself
 
     return invoice
+
+
+# =======================================================
+
+@transaction.atomic
+def clone_invoice(original_invoice_id: int, new_due_date: timezone.datetime.date) -> Invoice:
+    """
+    Creates a new invoice by copying all items from an original invoice.
+    The new invoice will have a DRAFT status.
+    """
+    try:
+        original_invoice = Invoice.objects.select_related('customer').prefetch_related('items').get(pk=original_invoice_id)
+    except Invoice.DoesNotExist:
+        raise ValueError(_("Original invoice with ID %(id)s does not exist.") % {'id': original_invoice_id})
+
+    # Create the new invoice header
+    new_invoice = Invoice.objects.create(
+        customer=original_invoice.customer,
+        invoice_number=_generate_unique_invoice_number(),
+        status=Invoice.Status.DRAFT,
+        issued_at=timezone.now().date(),
+        due_at=new_due_date,
+        notes=original_invoice.notes,
+    )
+
+    # Copy all items from the original invoice
+    new_items = []
+    for item in original_invoice.items.all():
+        new_items.append(InvoiceItem(
+            invoice=new_invoice,
+            product=item.product,
+            description=item.description,
+            quantity=item.quantity,
+            unit_price=item.unit_price, # Snapshot the price again
+        ))
+    
+    InvoiceItem.objects.bulk_create(new_items)
+
+    # Recalculate the total for the new invoice
+    recalculate_invoice_total(new_invoice)
+    
+    return new_invoice

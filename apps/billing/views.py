@@ -5,11 +5,20 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.http import Http404
+from django.utils import timezone
 
 from .models import Invoice, InvoiceItem
 from .forms import InvoiceForm, AddItemForm
 from .services import mark_invoice_paid, add_invoice_item
 from django.shortcuts import render
+
+from django.http import HttpResponse, FileResponse, HttpResponseServerError
+from django.core.mail import EmailMessage
+from django.conf import settings
+
+from .services import clone_invoice
+from .utils import generate_invoice_pdf
+import traceback
 
 class InvoiceListView(LoginRequiredMixin, ListView):
     model = Invoice
@@ -87,3 +96,72 @@ def mark_invoice_as_paid(request, pk):
         return redirect('invoice-detail', pk=invoice.pk)
     
     return render(request, 'billing/mark_paid_confirm.html', {'invoice': invoice})
+
+
+
+# =========================================
+
+
+# --- New Feature Views ---
+
+def clone_invoice_view(request, pk):
+    """Creates a clone of an existing invoice."""
+    original_invoice = get_object_or_404(Invoice, pk=pk)
+    if request.method == 'POST':
+        try:
+            # For simplicity, we'll set the due date to 30 days from now
+            new_due_date = timezone.now().date() + timezone.timedelta(days=30)
+            new_invoice = clone_invoice(original_invoice.id, new_due_date)
+            messages.success(request, f"Invoice {new_invoice.invoice_number} has been created by cloning {original_invoice.invoice_number}.")
+            return redirect('invoice-detail', pk=new_invoice.pk)
+        except ValueError as e:
+            messages.error(request, str(e))
+    return redirect('invoice-detail', pk=original_invoice.pk)
+
+
+def download_invoice_pdf(request, pk):
+    """Generates and returns an invoice as a PDF download."""
+    try:
+        invoice = get_object_or_404(Invoice, pk=pk)
+        
+        # Get the buffer from the utility function
+        buffer = generate_invoice_pdf(invoice)
+
+        # --- CRITICAL CHANGE ---
+        # Create a HttpResponse with the correct content type
+        response = HttpResponse(buffer, content_type='application/pdf')
+        
+        # Set the Content-Disposition header to force a download
+        response['Content-Disposition'] = f'attachment; filename="Invoice_{invoice.invoice_number}.pdf"'
+        
+        return response
+
+    except Exception as e:
+        # This will catch any error and show it in the browser for debugging
+        error_message = f"An error occurred: {e}<br><br>{traceback.format_exc()}"
+        return HttpResponseServerError(error_message)
+
+
+def send_invoice_email(request, pk):
+    """Emails the invoice PDF to the customer."""
+    invoice = get_object_or_404(Invoice, pk=pk)
+    if request.method == 'POST':
+        try:
+            pdf = generate_invoice_pdf(invoice)
+
+            email = EmailMessage(
+                subject=f"Invoice {invoice.invoice_number} from Your Company",
+                body=f"Dear {invoice.customer.name},\n\nPlease find your attached invoice.\n\nThank you for your business.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[invoice.customer.email],
+            )
+            email.attach(f'Invoice_{invoice.invoice_number}.pdf', pdf, 'application/pdf')
+            email.send()
+
+            messages.success(request, f"Invoice {invoice.invoice_number} has been sent to {invoice.customer.email}.")
+        except Exception as e:
+            messages.error(request, f"Failed to send email. Error: {e}")
+
+        return redirect('invoice-detail', pk=invoice.pk)
+
+    return redirect('invoice-detail', pk=invoice.pk)

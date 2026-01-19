@@ -4,7 +4,10 @@ from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db.models import Sum, F
-from django.core.validators import MinValueValidator 
+from django.core.validators import MinValueValidator
+
+import datetime
+import random
 
 # Create your models here.
 
@@ -41,6 +44,8 @@ class Invoice(TimeStampedModel):
         _("invoice number"),
         max_length=50,
         unique=True,
+        blank=True,
+        editable=False,
         db_index=True,
         help_text=_("Unique identifier for the invoice."),
     )
@@ -112,6 +117,19 @@ class Invoice(TimeStampedModel):
                     _("You cannot modify an invoice that is %(status)s.") % 
                     {'status': original_status}
                 )
+            
+        # In your Invoice class
+    def save(self, *args, **kwargs):
+        # Only generate an invoice number if this is a new object (no pk yet)
+        if not self.pk:
+            # Generate a unique invoice number
+            today = datetime.date.today()
+            year_day = today.strftime("%Y%m%d")
+            random_suffix = random.randint(1000, 9999)
+            self.invoice_number = f"INV-{year_day}-{random_suffix}"
+        
+        # Call the "real" save method
+        super().save(*args, **kwargs)
             
     @property
     def balance_due(self):

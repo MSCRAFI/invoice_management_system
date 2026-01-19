@@ -43,12 +43,17 @@
     </div>
 
     <hr>
+
     <div>
         {% if invoice.status != 'PAID' and invoice.status != 'CANCELLED' %}
             <a href="{% url 'invoice-add-item' invoice.pk %}" role="button">Add Item</a>
             <a href="{% url 'payment-create' invoice.pk %}" role="button" class="primary">Record Payment</a>
             <a href="{% url 'invoice-mark-paid' invoice.pk %}" role="button" class="secondary">Mark as Fully Paid</a>
         {% endif %}
+        <!-- NEW BUTTONS -->
+        <a href="{% url 'invoice-download-pdf' invoice.pk %}" role="button" class="secondary">📄 Download PDF</a>
+        <a href="{% url 'invoice-send-email' invoice.pk %}" role="button" class="secondary" onclick="return confirm('Are you sure you want to email this invoice to {{ invoice.customer.email }}?')">✉️ Email Invoice</a>
+        <a href="{% url 'invoice-clone' invoice.pk %}" role="button" class="contrast" onclick="return confirm('Are you sure you want to clone this invoice?')">📋 Clone Invoice</a>
         <a href="{% url 'invoice-update' invoice.pk %}" role="button">Edit Invoice</a>
     </div>
 {% endblock %}

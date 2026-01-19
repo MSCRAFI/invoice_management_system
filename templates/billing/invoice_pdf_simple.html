@@ -1,0 +1,66 @@
+<!-- This template uses only basic HTML tags compatible with ReportLab's parser -->
+<h1>INVOICE</h1>
+<hr>
+
+<table width="100%">
+    <tr>
+        <td width="50%">
+            <b>Bill To:</b><br/>
+            {{ invoice.customer.name }}<br/>
+            {{ invoice.customer.address|linebreaksbr }}
+        </td>
+        <td width="50%" align="right">
+            <b>Your Company</b><br/>
+            123 Your Street<br/>
+            Your City, State, Zip<br/>
+            <br/>
+            <b>Invoice #:</b> {{ invoice.invoice_number }}<br/>
+            <b>Date Issued:</b> {{ invoice.issued_at|date:"Y-m-d" }}<br/>
+            <b>Date Due:</b> {{ invoice.due_at|date:"Y-m-d" }}
+        </td>
+    </tr>
+</table>
+<hr>
+
+<h3>Items</h3>
+<table width="100%">
+    <tr>
+        <td><b>Item</b></td>
+        <td><b>Description</b></td>
+        <td align="right"><b>Unit Price</b></td>
+        <td align="right"><b>Quantity</b></td>
+        <td align="right"><b>Total</b></td>
+    </tr>
+    {% for item in invoice.items.all %}
+    <tr>
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.description|linebreaksbr }}</td>
+        <td align="right">${{ item.unit_price|floatformat:2 }}</td>
+        <td align="right">{{ item.quantity }}</td>
+        <td align="right">${{ item.total|floatformat:2 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<hr>
+
+<table width="100%">
+    <tr>
+        <td width="80%"></td>
+        <td width="20%">
+            <table width="100%">
+                <tr>
+                    <td align="right">Subtotal:</td>
+                    <td align="right">${{ invoice.subtotal|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td align="right">Tax:</td>
+                    <td align="right">${{ invoice.tax_amount|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td align="right"><b>Total:</b></td>
+                    <td align="right"><b>${{ invoice.total_amount|floatformat:2 }}</b></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>

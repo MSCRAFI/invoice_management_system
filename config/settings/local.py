@@ -17,3 +17,17 @@ DATABASES = {
 }
 
 
+
+# Email Backend for Development
+# This will print emails to the console instead of sending them.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# For a real server (e.g., using Gmail for testing):
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your-app-password' # Use an App Password!
+# DEFAULT_FROM_EMAIL = 'your-email@gmail.com'
+
